@@ -34,13 +34,13 @@ from src.tools.func.perplexity_search_web import execute as perplexity_search_ex
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 log = logging.getLogger("mcp-perplexity-server")
 
-auth_provider = AuthKitProvider(
-    authkit_domain="https://striking-field-22-staging.authkit.app",
-    base_url="https://faithful-pink-raccoon.fastmcp.app/mcp"  # Use your actual server URL
-)
+# auth_provider = AuthKitProvider(
+#     authkit_domain="https://striking-field-22-staging.authkit.app",
+#     base_url="http://localhost:8000/mcp/",  # Use your actual server URL
+# )
 
 # ── MCP server ───────────────────────────────────────────────────────────────
-mcp = FastMCP("perplexity-search", auth=auth_provider)
+mcp = FastMCP("perplexity-search")
 
 
 @mcp.tool()
