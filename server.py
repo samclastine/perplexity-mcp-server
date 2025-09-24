@@ -16,6 +16,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from fastmcp.server.server import FastMCP
+from fastmcp.server.auth.providers.workos import AuthKitProvider
+
 
 # Ensure repo root is on sys.path so `uv run server.py` works
 import sys as _sys
@@ -32,9 +34,13 @@ from src.tools.func.perplexity_search_web import execute as perplexity_search_ex
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 log = logging.getLogger("mcp-perplexity-server")
 
+auth_provider = AuthKitProvider(
+    authkit_domain="https://striking-field-22-staging.authkit.app",
+    base_url="https://faithful-pink-raccoon.fastmcp.app/mcp"  # Use your actual server URL
+)
 
 # ── MCP server ───────────────────────────────────────────────────────────────
-mcp = FastMCP("perplexity-search")
+mcp = FastMCP("perplexity-search", auth=auth_provider)
 
 
 @mcp.tool()
