@@ -4,7 +4,7 @@ An MCP (Model Context Protocol) server that exposes a single tool to search the 
 
 ## Overview
 
-- Protocol: MCP over STDIO (via FastMCP)
+- Protocol: MCP over STDIO (via FastMCP 2.x)
 - Tool: `perplexity_search_web`
 - Default recency window: last month
 - Output: text response with citations appended when available
@@ -41,7 +41,7 @@ perplexity-mcp-server/
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -U pip
-pip install "mcp[cli]>=1.14.0" aiohttp python-dotenv
+pip install "mcp[cli]>=1.14.0" "fastmcp>=2.12.0" aiohttp python-dotenv
 ```
 
 2) Configure your environment file
@@ -55,14 +55,14 @@ Copy-Item .env.example .env
 
 3) Integrate with an MCP client (Claude Desktop example)
 
-Add an entry to your Claude Desktop config (replace paths to match your machine):
+Add an entry to your Claude Desktop config (replace paths to match your machine). You can point directly to the Python file, as FastMCP CLI will run it:
 
 ```json
 {
 	"mcpServers": {
 		"perplexity-mcp-server": {
 			"command": "E:\\mcp-servers\\perplexity-mcp-server\\.venv\\Scripts\\python.exe",
-			"args": ["E:\\mcp-servers\\perplexity-mcp-server\\server.py"]
+		"args": ["E:\\mcp-servers\\perplexity-mcp-server\\server.py"]
 		}
 	}
 }
@@ -70,7 +70,12 @@ Add an entry to your Claude Desktop config (replace paths to match your machine)
 
 Restart Claude Desktop. The tool `perplexity_search_web` will be available to your assistant when connected to this server.
 
-> Note: Running `python server.py` directly will start the MCP server and wait for an MCP client to connect over STDIO. You generally won’t see interactive output in this mode—use an MCP-compatible client to invoke tools.
+> Note: You can also run locally with the CLI:
+>
+> ```powershell
+> fastmcp run .\server.py --transport stdio --no-banner
+> ```
+> This should run without the "Already running asyncio" error, thanks to the FastMCP 2.x runtime.
 
 ## Configuration
 

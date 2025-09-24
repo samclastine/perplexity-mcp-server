@@ -15,7 +15,7 @@ from typing import Dict, Any
 from dotenv import load_dotenv
 load_dotenv()
 
-from mcp.server.fastmcp import FastMCP
+from fastmcp.server.server import FastMCP
 
 # Ensure repo root is on sys.path so `uv run server.py` works
 import sys as _sys
@@ -38,7 +38,7 @@ mcp = FastMCP("perplexity-search")
 
 
 @mcp.tool()
-def perplexity_search_web(query: str) -> str:
+async def perplexity_search_web(query: str) -> str:
     """Search the web using Perplexity AI with enhanced research capabilities.
     
     Uses a fixed default recency window of the last month for results.
@@ -53,21 +53,16 @@ def perplexity_search_web(query: str) -> str:
     if not isinstance(query, str) or not query.strip():
         raise ValueError("Query must be a non-empty string")
     
-    # Since execute is async, we need to run it in the event loop
+    # FastMCP 2.x manages the event loop; return/await coroutines directly.
     try:
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            # If we're already in an async context, create a new task
-            import concurrent.futures
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                future = executor.submit(asyncio.run, perplexity_search_execute({"query": query}))
-                return future.result()
-        else:
-            # If no loop is running, we can use asyncio.run
-            return asyncio.run(perplexity_search_execute({"query": query}))
+        return await perplexity_search_execute({"query": query})
     except Exception as e:
         log.error(f"Error executing Perplexity search: {e}")
         raise RuntimeError(f"Failed to execute search: {str(e)}") from e
+
+
+# Export aliases expected by some runners
+app = mcp
 
 
 if __name__ == "__main__":
